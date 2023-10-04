@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
 	sourcev1 "github.com/fluxcd/source-controller/api/v1beta2"
@@ -81,7 +82,12 @@ func (a *helmRepositoryListAdapter) summariseItem(i int, includeNamespace bool, 
 	if item.GetArtifact() != nil {
 		revision = item.GetArtifact().Revision
 	}
-	status, msg := statusAndMessage(item.Status.Conditions)
+	var status, msg string
+	if item.Spec.Type == sourcev1.HelmRepositoryTypeOCI {
+		status, msg = string(metav1.ConditionTrue), "Helm repository is Ready"
+	} else {
+		status, msg = statusAndMessage(item.Status.Conditions)
+	}
 	revision = utils.TruncateHex(revision)
 	msg = utils.TruncateHex(msg)
 	return append(nameColumns(&item, includeNamespace, includeKind),
