@@ -25,10 +25,15 @@ import (
 	"os"
 	"testing"
 
+	"k8s.io/klog/v2/klogr"
+	"sigs.k8s.io/controller-runtime/pkg/log"
+
 	"github.com/fluxcd/flux2/v2/internal/utils"
 )
 
 func TestMain(m *testing.M) {
+	log.SetLogger(klogr.New())
+
 	// Ensure tests print consistent timestamps regardless of timezone
 	os.Setenv("TZ", "UTC")
 

@@ -213,7 +213,7 @@ func (resume resumeCommand) reconcile(ctx context.Context, res resumable) reconc
 	logger.Waitingf("waiting for %s reconciliation", resume.kind)
 
 	if err := wait.PollImmediate(rootArgs.pollInterval, rootArgs.timeout,
-		isReady(ctx, resume.client, namespacedName, res)); err != nil {
+		isObjectReadyConditionFunc(ctx, resume.client, namespacedName, res.asClientObject())); err != nil {
 		return reconcileResponse{
 			resumable: res,
 			err:       err,
